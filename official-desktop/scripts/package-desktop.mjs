@@ -74,7 +74,9 @@ writeFileSync(join(appRoot, 'scripts/prepare-ipzsk-preview.ts'), original
   .replace("import {\n  resolveDesktopAppId,\n  resolveMacOSSigningEnvironment,\n} from './desktop-release-environment.mjs'\n", '')
   .replace("import {\n  signMacOSRuntime,\n} from './macos-runtime.ts'\n", '')
   .replace(storeDeclaration, "const STORE_ROOT = join(APP_ROOT, '.desktop-build', 'preview-pnpm-store')"))
-await run(['exec', 'tsx', 'scripts/prepare-ipzsk-preview.ts'], appRoot)
+// Remove the generated script afterwards: a later build's tsc would type-check it.
+try { await run(['exec', 'tsx', 'scripts/prepare-ipzsk-preview.ts'], appRoot) }
+finally { rmSync(join(appRoot, 'scripts/prepare-ipzsk-preview.ts'), { force: true }) }
 }
 }
 if (process.argv.includes('--prepare-runtime-only')) process.exit(0)

@@ -126,7 +126,7 @@ html[data-dsh-imagegen-active]:not([data-dsh-taskboard-active]):not([data-dsh-ss
 /* The shell can have any number of plugin entries between the New Session
    tabs and its workspace region. Hide the whole middle run while image
    generation owns the frame, without relying on a plugin allow-list. */
-html[data-dsh-imagegen-active] [data-dsh-imagegen-sidebar-root] > :not([data-dsh-imagegen-session-tabs]):not([class*='logoRow']):not([class*='regionArea']):not([class*='footArea']) {
+html[data-dsh-imagegen-active] [data-dsh-imagegen-sidebar-root] > :not([data-dsh-imagegen-session-tabs]):not([class*='topStrip']):not([class*='logoRow']):not([class*='regionArea']):not([class*='footArea']) {
   display: none !important;
 }
 
@@ -2612,4 +2612,9 @@ html[data-dsh-imagegen-chat-collapsed] [data-dsh-imagegen-chat-resizer] {
   .galleryToolbar { align-items: flex-start; flex-direction: column; }
   .galleryToolbarActions { width: 100%; flex-wrap: wrap; }
   .galleryMasonry { grid-template-columns: 1fr; }
+}
+
+/* The studio sidebar (a transparent native view) sits over the region area; hide the session tree beneath it. */
+html[data-dsh-imagegen-active] [data-dsh-imagegen-sidebar-root] [class*='regionArea'] > * {
+  visibility: hidden;
 }

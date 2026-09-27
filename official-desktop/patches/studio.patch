@@ -1,0 +1,48 @@
+--- a/apps/desktop/src/main.ts
++++ b/apps/desktop/src/main.ts
+@@ -4,6 +4,7 @@
+ import { readFile, writeFile } from 'node:fs/promises'
+ import { mkdirSync } from 'node:fs'
+ import { IpzskAccountController } from './ipzsk-account.ts'
++import { IPZSK_STUDIO_IPC, IpzskStudioView, studioLayout } from './ipzsk-studio.ts'
+ import { createIpzskMarket } from './ipzsk-market.ts'
+ import { IpzskPluginInstaller } from './ipzsk-plugin-installer.ts'
+ import { prepareBundledPreviewProfile } from './ipzsk-bundled-plugin.ts'
+@@ -695,6 +696,14 @@
+     platformView.setBounds(platformBounds(bounds))
+   })
+   ipcMain.handle(PLATFORM_IPC.close, (event) => { assertMainApplication(event); platformView.close() })
++  const studioView = new IpzskStudioView()
++  ipcMain.handle(IPZSK_STUDIO_IPC.open, (event, layout: unknown) =>
++    studioView.open(assertMainApplication(event), studioLayout(layout), account.sessionCookie()))
++  ipcMain.handle(IPZSK_STUDIO_IPC.bounds, (event, layout: unknown) => {
++    assertMainApplication(event)
++    studioView.setBounds(studioLayout(layout))
++  })
++  ipcMain.handle(IPZSK_STUDIO_IPC.close, (event) => { assertMainApplication(event); studioView.close() })
+   // Only the main window may synchronize its palette with the native material.
+   ipcMain.on(DESKTOP_IPC.nativeThemeSet, (event, source: unknown) => {
+     if (mainWindow === undefined || event.sender !== mainWindow.webContents) return
+--- a/apps/desktop/src/preload-app.ts
++++ b/apps/desktop/src/preload-app.ts
+@@ -4,6 +4,7 @@
+ import { contextBridge, ipcRenderer, webUtils } from 'electron'
+ import { DESKTOP_IPC, SCHEME, type DshDesktopProductApi, type DesktopUpdatePresentation } from './ipc.ts'
+ import { PLATFORM_IPC } from './platform-ipc.ts'
++import { IPZSK_STUDIO_IPC } from './ipzsk-studio-ipc.ts'
+ import { markDocumentPlatform, syncWindowFullscreen } from './preload-platform.ts'
+ import { syncNativeTheme } from './preload-theme.ts'
+ import { syncWindowsAppearance } from './preload-windows.ts'
+@@ -90,6 +91,12 @@
+     setBounds: (bounds: { x: number; y: number; width: number; height: number }) => ipcRenderer.invoke(PLATFORM_IPC.bounds, bounds),
+     close: () => ipcRenderer.invoke(PLATFORM_IPC.close),
+   })
++  // layout: { main: bounds, nav: bounds | null }, validated by the main process.
++  contextBridge.exposeInMainWorld('ipzskStudio', {
++    open: (layout: unknown) => ipcRenderer.invoke(IPZSK_STUDIO_IPC.open, layout),
++    setBounds: (layout: unknown) => ipcRenderer.invoke(IPZSK_STUDIO_IPC.bounds, layout),
++    close: () => ipcRenderer.invoke(IPZSK_STUDIO_IPC.close),
++  })
+ }
+ 
+ markDocumentPlatform()

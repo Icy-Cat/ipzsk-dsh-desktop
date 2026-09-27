@@ -170,7 +170,7 @@ export function mountSidebarEntry(
     if (button === undefined) return
     originalButton ??= button
     tabs = placeTabs(root, controller, newSessionLabel, newSessionTooltip, imageLabel, imageTooltip)
-    historyHost = placeHistoryHost(root)
+    // History lives inside the web studio now; keep the session tree visible.
     syncActive()
   }
 

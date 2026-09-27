@@ -133,6 +133,12 @@ export class IpzskAuth {
     return structuredClone({ version: 1, token: this.credential(), ...this.models() })
   }
 
+  /** `name=value` of the signed-in website session, for the embedded studio. */
+  sessionCookie(): string {
+    if (!this.cookie) throw new Error('登录已失效，请重新登录 IPZSK。')
+    return this.cookie
+  }
+
   credential(): string {
     if (!this.modelToken) throw new Error('登录已失效，请重新登录 IPZSK。')
     return this.modelToken

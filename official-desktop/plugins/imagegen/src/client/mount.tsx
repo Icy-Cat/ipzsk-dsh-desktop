@@ -19,7 +19,7 @@ import type { ISessions } from '@deepseek-ai/dsh-api-session-controller/client'
 import { createRoot, type Root } from 'react-dom/client'
 import type { ImageGenApi } from './api.ts'
 import type { ImageGenController } from './controller.ts'
-import { ImageGenPanel } from './ImageGenPanel.tsx'
+import { StudioHost } from './StudioHost.tsx'
 import type { ImageGenScope } from './settings-scope.ts'
 import type { ConversationService } from './conversation-sync.ts'
 import css from './panel.module.css'
@@ -155,7 +155,7 @@ export function mountPanel(
     container.className = css.view
     column.appendChild(container)
     root = createRoot(container)
-    root.render(<ImageGenPanel api={api} scope={scope} {...services} />)
+    root.render(<StudioHost controller={controller} />)
     resizer = column.querySelector<HTMLDivElement>(RESIZER_SELECTOR) ?? createChatResizer(column)
     if (resizer.parentElement !== column) column.appendChild(resizer)
   }

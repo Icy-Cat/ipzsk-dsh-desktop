@@ -61,6 +61,11 @@ export class IpzskAccountController {
     return this.auth.bootstrap()
   }
 
+  sessionCookie(): string {
+    if (!this.customer || this.disposed) throw new Error('请先登录 IPZSK。')
+    return this.auth.sessionCookie()
+  }
+
   pluginMarket(): Promise<unknown> {
     if (!this.customer || this.disposed) return Promise.reject(new Error('请先登录 IPZSK。'))
     return this.auth.pluginMarket()
